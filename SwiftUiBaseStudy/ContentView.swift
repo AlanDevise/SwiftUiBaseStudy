@@ -29,7 +29,12 @@ struct ContentView: View {
                 .offset(y: showCard ? -200 : 0)
                 .opacity(showCard ? 0.2 : 1)
                 .blur(radius: show ? 20 : 0)        // show为true时radius等于20否则等于0
-                .animation(Animation.default.delay(0.2), value: show || showCard)   // 通过show这个变量来以default默认的动画进行展现效果
+            // 通过show这个变量来以default默认的动画进行展现效果
+                .animation(
+                    .timingCurve(0.2, 0.8, 0.2, 1, duration: 0.8),
+                    value: show || showCard
+                )
+            // .animation(Animation.default.delay(0.2), value: show || showCard)
             
             Text("width: \(viewState.width), height: \(viewState.height)")
                 .offset(x: 0, y: -310)
@@ -49,7 +54,11 @@ struct ContentView: View {
                     .degrees(showCard ? 0 : 10),axis:(x: 10.0, y: 0.0,z: 0.0)
                 )
                 .blendMode(.hardLight)                              // 添加穿透效果
-                .animation(.easeInOut(duration: 0.5), value: show)
+                .animation(
+                    .timingCurve(0.2, 0.8, 0.2, 1, duration: 0.8),
+                    value: show || showCard
+                )
+            // .animation(.easeInOut(duration: 0.5), value: show)
             BackCardView()
                 .frame(width: 340, height: 220)
                 .background(show ? Color("card4"):Color("card3"))
@@ -65,7 +74,11 @@ struct ContentView: View {
                     .degrees(showCard ? 0 : 5), axis:(x: 10.0, y: 0.0, z: 0.0)
                 )
                 .blendMode(.hardLight)                              // 设置混合模式，添加穿透效果
-                .animation(.easeInOut(duration: 0.5), value: show)
+                .animation(
+                    .timingCurve(0.2, 0.8, 0.2, 1, duration: 0.8),
+                    value: show || showCard
+                )
+            // .animation(.easeInOut(duration: 0.5), value: show)
             CardView()
                 .frame(width: showCard ? 375 : 340, height: 220)
                 .background(Color.black)
@@ -77,6 +90,10 @@ struct ContentView: View {
                 .onTapGesture {                                     // 单击手势动作时
                     self.showCard.toggle()                          // 反转变量showCard的状态（这里通常是Bool值）
                 }
+                .animation(
+                    .timingCurve(0.2, 0.8, 0.2, 1, duration: 0.8),
+                    value: show || showCard
+                )
                 .gesture(                                           // 定义一个手势动作
                     DragGesture()                                   // 拖拽动作
                         .onChanged({value in
@@ -94,7 +111,7 @@ struct ContentView: View {
             BottomPopupView()
                 .offset(x: 0, y: showCard ? 360 : 1000)
                 .offset(y: bottomState.height)
-                .blur(radius: show ? 20 : 0)        // show为true时radius等于20否则等于0
+                .blur(radius: show ? 20 : 0)
                 .animation(
                     .timingCurve(0.2, 0.8, 0.2, 1, duration: 0.8),
                     value: show || showCard
@@ -102,26 +119,31 @@ struct ContentView: View {
                 .gesture(
                     DragGesture()
                         .onChanged({value in
-                            bottomState = value.translation
-                            if (showFull){
-                                bottomState.height += -300
+                            withAnimation(.timingCurve(0.2, 0.8, 0.2, 1, duration: 0.8)) {
+                                bottomState = value.translation
+                                if (showFull){
+                                    bottomState.height += -300
+                                }
+                                if bottomState.height < -300 {
+                                    bottomState.height = -300
+                                }
                             }
-                            if bottomState.height < -300 {
-                                bottomState.height = -300
-                            }
+                            
                         })
                         .onEnded { value in
-                            if bottomState.height > 50 {
-                                showCard = false
-                            }
-                            // 节点控制
-                            if (!showFull && bottomState.height < -100)
-                                || (showFull && bottomState.height < -250){
-                                showFull = true
-                                bottomState.height = -300
-                            }else{
-                                bottomState = CGSize.zero
-                                showFull = false
+                            withAnimation(.timingCurve(0.2, 0.8, 0.2, 1, duration: 0.8)) {
+                                if bottomState.height > 50 {
+                                    showCard = false
+                                }
+                                // 节点控制
+                                if (!showFull && bottomState.height < -100)
+                                    || (showFull && bottomState.height < -250){
+                                    showFull = true
+                                    bottomState.height = -300
+                                }else{
+                                    bottomState = CGSize.zero
+                                    showFull = false
+                                }
                             }
                         }
                 )
