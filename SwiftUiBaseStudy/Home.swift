@@ -19,7 +19,7 @@ struct Home: View {
             Color(#colorLiteral(red:0.8549019608,green:0.8745098039,blue:0.9176470588,alpha:1))
                 .edgesIgnoringSafeArea(.all)
             HomeView(showProfile: $showProfile)
-                .padding(.top, 40)
+                .padding(.top, 70)
                 .background(Color.white)
                 .clipShape(RoundedRectangle(cornerRadius: showProfile ? 30 : 0, style: .continuous))
                 .scaleEffect(showProfile ? 0.9 : 1)
@@ -41,13 +41,17 @@ struct Home: View {
                 .gesture(
                     DragGesture()
                         .onChanged( { value in
-                            viewState = value.translation
+                            withAnimation(.timingCurve(0.2, 0.8, 0.2, 1, duration: 0.8)) {
+                                viewState = value.translation
+                            }
                         })
                         .onEnded( { value in
-                            if viewState.height > 50 {
-                                showProfile.toggle()
+                            withAnimation(.timingCurve(0.2, 0.8, 0.2, 1, duration: 0.8)) {
+                                if viewState.height > 50 {
+                                    showProfile.toggle()
+                                }
+                                viewState = .zero
                             }
-                            viewState = .zero
                         })
                 )
         }
