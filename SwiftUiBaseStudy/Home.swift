@@ -43,6 +43,9 @@ struct Home: View {
                         .onChanged( { value in
                             withAnimation(.timingCurve(0.2, 0.8, 0.2, 1, duration: 0.8)) {
                                 viewState = value.translation
+                                if viewState.height < -200 {
+                                    viewState.height = -200
+                                }
                             }
                         })
                         .onEnded( { value in
