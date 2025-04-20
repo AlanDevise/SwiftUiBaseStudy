@@ -12,6 +12,8 @@ struct Home: View {
     /// 是否显示个人信息
     @State var showProfile: Bool = false
     
+    @State var viewState: CGSize = CGSize.zero
+    
     var body: some View {
         ZStack {
             Color(#colorLiteral(red:0.8549019608,green:0.8745098039,blue:0.9176470588,alpha:1))
@@ -41,16 +43,32 @@ struct Home: View {
             .clipShape(RoundedRectangle(cornerRadius: showProfile ? 30 : 0, style: .continuous))
             .scaleEffect(showProfile ? 0.9 : 1)
             .rotation3DEffect(
-                Angle(degrees: showProfile ? -10 : 0), axis: (x: 10, y: 1, z: 0)
+                Angle(degrees: showProfile ? Double(viewState.height / -10)-10 : 0), axis: (x: 10, y: 1, z: 0)
             )
             .offset(y: showProfile ? -450 : 0)
             .edgesIgnoringSafeArea(.all)
             
             MenuView()
-                .offset(y: showProfile ? 0 : 600)
+                .background(.black.opacity(0.001))
+                .offset(y: showProfile ? 0 : 1000)
+                .offset(y: viewState.height)
                 .animation(.spring(response: 0.8, dampingFraction: 0.7),value: showProfile)
+                .onTapGesture {
+                    showProfile.toggle()
+                }
+                .gesture(
+                    DragGesture()
+                        .onChanged( { value in
+                            viewState = value.translation
+                        })
+                        .onEnded( { value in
+                            if viewState.height > 50 {
+                                showProfile.toggle()
+                            }
+                            viewState = .zero
+                        })
+                )
         }
-        
     }
 }
 
