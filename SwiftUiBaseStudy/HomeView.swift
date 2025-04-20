@@ -8,11 +8,24 @@
 import SwiftUI
 
 struct HomeView: View {
+    
+    @Binding var showProfile: Bool
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack {
+            HStack {
+                Text("Watching")
+                    .font(.system(size: 28))
+                    .bold()
+                Spacer()
+                AvatarView(showProfile: $showProfile)
+            }
+            .padding(.horizontal)
+            Spacer()
+        }
     }
 }
 
 #Preview {
-    HomeView()
+    HomeView(showProfile: .constant(false))
 }
