@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct HomeView: View {
-
+    
     @Binding var showProfile: Bool
-
+    
     var body: some View {
         VStack {
             HStack {
@@ -24,7 +24,11 @@ struct HomeView: View {
             ScrollView(.horizontal, showsIndicators: false){
                 HStack{
                     ForEach(sectionData) { item in
-                        SectionView(section: item)
+                        GeometryReader{ geometry in
+                            SectionView(section: item)
+                                .rotation3DEffect(Angle(degrees: Double(geometry.frame(in: .global).minX - 30) / -20), axis: (x:0, y:1, z:0))
+                        }
+                        .frame(width: 275, height: 275)
                     }
                 }
                 .padding(20)
@@ -51,27 +55,9 @@ struct Section: Identifiable {
 
 // 数据
 var sectionData = [
-    Section(
-        title: "Prototype design in swift ui",
-        text: "18 sections",
-        logo: "Logo1",
-        image: Image(uiImage: #imageLiteral(resourceName: "Card4")),
-        color: Color(#colorLiteral(red: 0.4156862745, green: 0.3333333333, blue: 0.9882352941, alpha: 1))
-    ),
-    Section(
-        title: "Build a swiftui app",
-        text: "20 sections",
-        logo: "Logo1",
-        image: Image(uiImage: #imageLiteral(resourceName: "Card2")),
-        color: Color(#colorLiteral(red: 0.07843137255, green: 0.7450980392, blue: 0.9921568627, alpha: 1))
-    ),
-    Section(
-        title: "SwiftUI Advanced",
-        text: "20 sections",
-        logo: "Logo1",
-        image: Image(uiImage: #imageLiteral(resourceName: "Card4")),
-        color: Color(#colorLiteral(red: 0.968627451, green: 0.2156862745, blue: 0.3411764706, alpha: 1))
-    )
+    Section(title: "Prototype design in swift ui", text: "18 sections",logo: "Logo1",image: Image(uiImage: #imageLiteral(resourceName: "Card4")),color: Color(#colorLiteral(red: 0.4156862745, green: 0.3333333333, blue: 0.9882352941, alpha: 1))),
+    Section(title: "Build a swiftui app",text: "20 sections",logo: "Logo1",image: Image(uiImage: #imageLiteral(resourceName: "Card2")),color: Color(#colorLiteral(red: 0.07843137255, green: 0.7450980392, blue: 0.9921568627, alpha: 1))),
+    Section(title: "SwiftUI Advanced",text: "20 sections",logo: "Logo1",image: Image(uiImage: #imageLiteral(resourceName: "Card4")),color: Color(#colorLiteral(red: 0.968627451, green: 0.2156862745, blue: 0.3411764706, alpha: 1)))
 ]
 
 struct SectionView: View {
@@ -101,9 +87,9 @@ struct SectionView: View {
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 210)
         }
-        .frame(width: 275, height: 275)
         .padding(.horizontal, 20)
         .padding(.top, 20)
+        .frame(width: 275, height: 275)
         .background(section.color)
         .clipShape(RoundedRectangle(cornerRadius: 30))
         .shadow(color: section.color.opacity(0.3), radius: 20, x: 0, y: 20)
