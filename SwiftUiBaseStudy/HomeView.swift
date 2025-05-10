@@ -95,6 +95,7 @@ struct SectionView: View {
             }
             Text(section.text.uppercased())
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .bold()
             section.image
                 .resizable()
                 .aspectRatio(contentMode: .fit)
