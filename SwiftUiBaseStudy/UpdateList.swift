@@ -8,40 +8,74 @@
 import SwiftUI
 
 struct UpdateList: View {
+    
+    @ObservedObject var store = UpdateStore()
+    
+    func addUpdate() {
+        store.updates.append(
+            Update(
+                image: "Card1",
+                title: "Add data1",
+                text:
+                    "Take your SwiftUI app to the App Stroe with advanced techniques like API data, packages and CMS.",
+                date: "2021-01-01"
+            )
+        )
+    }
+    
     var body: some View {
         NavigationView {
-            List(updateData) { update in
-                NavigationLink(destination: UpdateDetail(update: update)) {
-                    HStack {
-                        Image(update.image)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 80, height: 80)
-                            .background(Color("primary"))
-                            .clipShape(
-                                RoundedRectangle(
-                                    cornerRadius: 20,
-                                    style: .circular
+            List {
+                ForEach(store.updates){update in
+                    NavigationLink(destination: UpdateDetail(update: update)) {
+                        HStack {
+                            Image(update.image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 80, height: 80)
+                                .background(Color("primary"))
+                                .clipShape(
+                                    RoundedRectangle(
+                                        cornerRadius: 20,
+                                        style: .circular
+                                    )
                                 )
-                            )
-                            .padding(.trailing, 4)
-                        VStack(alignment: .leading, spacing: 4.0) {
-                            Text(update.title)
-                                .font(.system(size: 20, weight: .bold))
-                            Text(update.text)
-                                .font(.subheadline)
-                                .lineLimit(2)
-                                .foregroundStyle(.secondary)
-                            Text(.init(update.date))
-                                .font(.caption)
-                                .foregroundStyle(Color("secondary"))
+                                .padding(.trailing, 4)
+                            VStack(alignment: .leading, spacing: 4.0) {
+                                Text(update.title)
+                                    .font(.system(size: 20, weight: .bold))
+                                Text(update.text)
+                                    .font(.subheadline)
+                                    .lineLimit(2)
+                                    .foregroundStyle(.secondary)
+                                Text(.init(update.date))
+                                    .font(.caption)
+                                    .foregroundStyle(Color("secondary"))
+                            }
                         }
                     }
+                }
+                .onDelete(perform: { index in
+                    store.updates.remove(at: index.first!)
+                })
+                .onMove{source, destination in
+                    store.updates
+                        .move(fromOffsets: source, toOffset: destination)
                 }
             }
             .listStyle(PlainListStyle())
             .navigationTitle("UpdateList")
             .navigationBarTitleDisplayMode(.automatic)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Add Update") {
+                        addUpdate()
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    EditButton()
+                }
+            }
         }
     }
 }
