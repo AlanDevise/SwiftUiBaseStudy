@@ -108,7 +108,7 @@ struct ContentView: View {
             // response：手指移动之后的响应速度，dampingFraction：跟随手指的晃动程度
                 .animation(.spring(response: 0.3, dampingFraction: 0.6),value: viewState)
             
-            BottomPopupView()
+            BottomPopupView(show: $showCard)
                 .offset(x: 0, y: showCard ? 360 : 1000)
                 .offset(y: bottomState.height)
                 .blur(radius: show ? 20 : 0)
@@ -205,6 +205,9 @@ struct TitleView: View {
 
 /// 底部弹窗视图
 struct BottomPopupView: View {
+    
+    @Binding var show: Bool
+    
     var body: some View {
         VStack(spacing:20){
             Rectangle()
@@ -216,6 +219,22 @@ struct BottomPopupView: View {
                 .font(.subheadline)                 // 设置字体
                 .multilineTextAlignment(.center)    // 设置排列规则
                 .lineSpacing(4)                     // 行间间隙
+            HStack(spacing: 20.0) {
+                RingView(color1: #colorLiteral(red:0.3647058904,green:0.06666667014,blue:0.9686274529,alpha:1), color2: #colorLiteral(red:0.2588235438,green:0.7568627596,blue:0.9686274529,alpha:1), width: 88, height: 88, show: $show)
+//                    .animation(.easeInOut.delay(0.25), value: show)
+                VStack(alignment: .leading, spacing: 8.0){
+                    Text("Swift UI Prototype")
+                        .bold()
+                    Text("12 of 12 sections completed \n10 hours spent so far")
+                        .font(.footnote)
+                        .foregroundStyle(.gray)
+                        .lineSpacing(4)
+                }
+                .padding(20)
+                .background(.white)
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .shadow(color:.black.opacity(0.2), radius: 20,x:0,y:10)
+            }
             Spacer()
         }
         .padding(.vertical, 8)          // 设置纵向间隔
