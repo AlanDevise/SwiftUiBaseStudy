@@ -14,12 +14,14 @@ struct Home: View {
     
     @State var viewState: CGSize = CGSize.zero
     
+    @State var showContent = false
+    
     var body: some View {
         ZStack {
             Color(#colorLiteral(red:0.8549019608,green:0.8745098039,blue:0.9176470588,alpha:1))
                 .edgesIgnoringSafeArea(.all)
-            HomeView(showProfile: $showProfile)
-                .padding(.top, 70)
+            HomeView(showProfile: $showProfile, showContent: $showContent)
+                .padding(.top, 60)
                 .background(Color.white)
                 .clipShape(RoundedRectangle(cornerRadius: showProfile ? 30 : 0, style: .continuous))
                 .scaleEffect(showProfile ? 0.9 : 1)
@@ -57,6 +59,27 @@ struct Home: View {
                             }
                         })
                 )
+            if showContent{
+                Color.white.ignoresSafeArea(.all)
+                ContentView()
+                VStack{
+                    HStack{
+                        Spacer()
+                        Image(systemName: "xmark")
+                            .frame(width: 36, height: 36)
+                            .foregroundStyle(.white)
+                            .background(.black)
+                            .clipShape(Circle())
+                    }
+                    Spacer()
+                }
+                .padding(.trailing,16)
+                .padding(.top,16)
+                .transition(.move(edge: .top))
+                .onTapGesture {
+                    showContent = false
+                }
+            }
         }
     }
 }
