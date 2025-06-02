@@ -11,17 +11,20 @@ struct CourseList: View {
     
     @State var show = false
     @State var show2 = false
+    @State var courses = courseData
     
     var body: some View {
         ScrollView {
             VStack(spacing: 30.0) {
-                CourseView(show:$show)
-                GeometryReader { geometry in
-                    CourseView(show:$show2)
-                        .offset(y:show2 ? -geometry.frame(in: .global).minY:0)
+                ForEach(courses.indices, id:\.self) { index in
+                    let show = courses[index].show
+                    GeometryReader { geometry in
+                        CourseView(show:$courses[index].show)
+                            .offset(y:show ? -geometry.frame(in: .global).minY:0)
+                    }
+                    .frame(height: show ? screen.height:280)
+                    .frame(maxWidth: show ? .infinity : screen.width - 60)
                 }
-                .frame(height: show2 ? screen.height:280)
-                .frame(maxWidth: show2 ? .infinity : screen.width - 60)
             }
             .frame(maxWidth: .infinity)
         }
@@ -106,3 +109,19 @@ struct CourseView: View {
         .animation(.spring(response: 0.5, dampingFraction: 0.6), value: show)
     }
 }
+
+struct Course:Identifiable {
+    let id = UUID()
+    var title:String
+    var subtitle:String
+    var image:UIImage
+    var logo:UIImage
+    var color:UIColor
+    var show:Bool
+}
+
+var courseData = [
+    Course(title:"Prototype Designs in SwiftUI",subtitle:"18 Sections",image:#imageLiteral(resourceName:"Background1"),logo:#imageLiteral(resourceName:"Logo1"),color: #colorLiteral(red: 0.3647058904, green: 0.06666667014, blue: 0.9686274529,alpha:1), show: false),
+    Course(title:"SwiftUI Advanced", subtitle: "20 Sections", image: #imageLiteral(resourceName: "Card3"),logo: #imageLiteral(resourceName:"Logo1"), color:#colorLiteral(red:0.8549019694, green:0.250980407, blue:0.4784313738,alpha: 1), show: false),
+    Course(title: "UI Design for Developers", subtitle:"20 Sections",image: #imageLiteral(resourceName:"Card4"),logo: #imageLiteral(resourceName:"Logo3"), color:#colorLiteral(red:0.2588235438, green:0.7568627596, blue:0.9686274529, alpha: 1), show: false)
+]
