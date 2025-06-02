@@ -90,6 +90,6 @@ struct CourseView: View {
             }
         }
         .ignoresSafeArea(.all)
-        .animation(.spring(response: 0.5, dampingFraction: 0.9),value: show)
+        .animation(.spring(response: 0.5, dampingFraction: 0.6), value: show)
     }
 }
