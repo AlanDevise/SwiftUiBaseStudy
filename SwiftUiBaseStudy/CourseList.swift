@@ -9,25 +9,40 @@ import SwiftUI
 
 struct CourseList: View {
     
-    @State var show = false
-    @State var show2 = false
+    @State var active = false
+//    @State var show2 = false
     @State var courses = courseData
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 30.0) {
-                ForEach(courses.indices, id:\.self) { index in
-                    let show = courses[index].show
-                    GeometryReader { geometry in
-                        CourseView(show:$courses[index].show, course: courseData[index])
-                            .offset(y:show ? -geometry.frame(in: .global).minY:0)
+        ZStack {
+            Color.black.opacity(active ? 0.5 : 0)
+                .ignoresSafeArea(.all)
+            ScrollView {
+                VStack(spacing: 30.0) {
+                    Text("Course List")
+                        .font(.largeTitle)
+                        .bold()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.top,30)
+                        .padding(.leading,30)
+                        .blur(radius: active ? 20:0)
+                    ForEach(courses.indices, id:\.self) { index in
+                        let show = courses[index].show
+                        GeometryReader { geometry in
+                            CourseView(show:$courses[index].show, course: courseData[index], active:$active)
+                                .offset(y:show ? -geometry.frame(in: .global).minY:0)
+                        }
+                        .frame(height: show ? screen.height:280)
+                        .frame(maxWidth: show ? .infinity : screen.width - 60)
+                        .zIndex(show ? 1 : 0)
                     }
-                    .frame(height: show ? screen.height:280)
-                    .frame(maxWidth: show ? .infinity : screen.width - 60)
                 }
+                .frame(maxWidth: .infinity)
             }
-            .frame(maxWidth: .infinity)
+            
         }
+        .animation(.default, value: active)
+        .statusBarHidden(active)    // 隐藏状态栏
     }
 }
 
@@ -40,8 +55,12 @@ struct CourseView: View {
     @Binding var show : Bool
     var course:Course
     
+    @Binding var active:Bool
+    
     var body: some View {
         ZStack(alignment: .top) {
+            Color.white
+                .ignoresSafeArea(.all)
             // content
             VStack(alignment: .leading, spacing: 30.0) {
                 Text("Take your SwiftUI app to the App Store with advanced techniques like API data, packages and CMS.")
@@ -82,6 +101,7 @@ struct CourseView: View {
                             .opacity(show ? 1 : 0)
                             .onTapGesture {
                                 show = false
+                                active = false
                             }
                     }
                 }
@@ -103,6 +123,7 @@ struct CourseView: View {
             .onTapGesture {
                 if !show{
                     show = true
+                    active = true
                 }
             }
         }
