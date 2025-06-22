@@ -12,12 +12,14 @@ struct CourseList: View {
     @State var active = false
     @State var courses = courseData
     @State var activeIndex =  -1
+    @State var activeView = CGSize.zero
+    
     
     var body: some View {
         ZStack {
-            Color.black.opacity(active ? 0.5 : 0)
+            Color.black.opacity(Double(activeView.height/100))
                 .ignoresSafeArea(.all)
-            ScrollView {
+            ScrollView(showsIndicators: !active) {
                 VStack(spacing: 30.0) {
                     Text("Course List")
                         .font(.largeTitle)
@@ -29,7 +31,7 @@ struct CourseList: View {
                     ForEach(courses.indices, id:\.self) { index in
                         let show = courses[index].show
                         GeometryReader { geometry in
-                            CourseView(show:$courses[index].show, course: courses[index], active:$active, index:index, activeIndex:$activeIndex)
+                            CourseView(show:$courses[index].show, course: courses[index], active:$active, index:index, activeIndex:$activeIndex, activeView: $activeView)
                                 .offset(y:show ? -geometry.frame(in: .global).minY:0)
                                 .opacity(active && activeIndex != index ? 0 : 1)
                                 .scaleEffect(active && activeIndex != index ? 0.5 : 1)
@@ -42,6 +44,7 @@ struct CourseList: View {
                 }
                 .frame(maxWidth: .infinity)
             }
+            .environment(\.isScrollEnabled, !active)    // 两层滑动，仅用掉一层
             
         }
         .animation(.default, value: active)
@@ -62,10 +65,13 @@ struct CourseView: View {
     var index: Int
     @Binding var activeIndex:Int
     
+    @Binding var activeView: CGSize
+    
     var body: some View {
         ZStack(alignment: .top) {
             Color.white
                 .ignoresSafeArea(.all)
+                .clipShape(RoundedRectangle(cornerRadius: 30))
             // content
             VStack(alignment: .leading, spacing: 30.0) {
                 Text("Take your SwiftUI app to the App Store with advanced techniques like API data, packages and CMS.")
@@ -82,6 +88,23 @@ struct CourseView: View {
             .shadow(color:.black.opacity(0.2), radius: 20, x: 0, y: 20)
             .offset(y: show ? 460 : 0)
             .opacity(show ? 1 : 0)
+            .gesture(
+                show ? DragGesture()
+                    .onChanged({ value in
+                        // 通过guard限制拖拽范围
+                        guard value.translation.height < 300 else { return }
+                        guard value.translation.height > 0 else { return }
+                        activeView = value.translation
+                    })
+                    .onEnded({ value in
+                        if activeView.height > 50 {
+                            show = false
+                            active = false
+                            activeIndex = -1
+                        }
+                        activeView = .zero
+                    }) : nil
+            )
             
             // Card
             VStack {
@@ -125,7 +148,23 @@ struct CourseView: View {
             .background(Color(uiColor: course.color))
             .clipShape(RoundedRectangle(cornerRadius: 30))
             .shadow(color: Color(uiColor: course.color).opacity(0.3), radius: 20, x: 0, y: 20)
-            
+            .gesture(
+                show ? DragGesture()
+                    .onChanged({ value in
+                        // 通过guard限制拖拽范围
+                        guard value.translation.height < 300 else { return }
+                        guard value.translation.height > 0 else { return }
+                        activeView = value.translation
+                    })
+                    .onEnded({ value in
+                        if activeView.height > 50 {
+                            show = false
+                            active = false
+                            activeIndex = -1
+                        }
+                        activeView = .zero
+                    }) : nil
+            )
             .onTapGesture {
                 if !show{
                     show = true
@@ -134,6 +173,11 @@ struct CourseView: View {
                 }
             }
         }
+        .scaleEffect(1-activeView.height/1000)
+        .rotation3DEffect(
+            Angle(degrees: activeView.height/10), axis: (x: 0.0, y: 1.0, z: 0.0)
+        )
+        .hueRotation(Angle(degrees: activeView.height))
         .ignoresSafeArea(.all)
         .animation(.spring(response: 0.5, dampingFraction: 0.6), value: show)
     }
