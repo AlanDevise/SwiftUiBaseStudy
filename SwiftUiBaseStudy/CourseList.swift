@@ -19,7 +19,7 @@ struct CourseList: View {
                 ForEach(courses.indices, id:\.self) { index in
                     let show = courses[index].show
                     GeometryReader { geometry in
-                        CourseView(show:$courses[index].show)
+                        CourseView(show:$courses[index].show, course: courseData[index])
                             .offset(y:show ? -geometry.frame(in: .global).minY:0)
                     }
                     .frame(height: show ? screen.height:280)
@@ -38,6 +38,7 @@ struct CourseList: View {
 struct CourseView: View {
     
     @Binding var show : Bool
+    var course:Course
     
     var body: some View {
         ZStack(alignment: .top) {
@@ -62,15 +63,15 @@ struct CourseView: View {
             VStack {
                 HStack {
                     VStack(alignment:.leading, spacing: 8.0){
-                        Text("Swift UI Advance")
+                        Text(course.title)
                             .font(.system(size: 24, weight: .bold))
                             .foregroundStyle(.white)
-                        Text("20 sections")
+                        Text(course.subtitle)
                             .foregroundStyle(.white.opacity(0.7))
                     }
                     Spacer()
                     ZStack {
-                        Image("Logo1")
+                        Image(uiImage: course.logo)
                             .opacity(show ? 0 : 1)
                         Image(systemName: "xmark")
                             .font(.system(size: 26,weight: .medium))
@@ -85,7 +86,7 @@ struct CourseView: View {
                     }
                 }
                 Spacer()
-                Image("Card3")
+                Image(uiImage: course.image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(maxWidth: .infinity)
@@ -95,9 +96,9 @@ struct CourseView: View {
             .padding(.top,show ? 30 : 0)
             // .frame(width:show ? screen.width : screen.width - 60, height:show ? screen.height : 240)
             .frame(maxWidth:show ? .infinity : screen.width - 60, maxHeight:show ? 460 : 280)
-            .background(Color(#colorLiteral(red:0.3647058904,green:0.06666667014,blue:0.9686274529,alpha:1)))
+            .background(Color(uiColor: course.color))
             .clipShape(RoundedRectangle(cornerRadius: 30))
-            .shadow(color: Color(#colorLiteral(red:0.3647058904,green:0.06666667014,blue:0.9686274529, alpha:1)).opacity(0.3), radius: 20, x: 0, y: 20)
+            .shadow(color: Color(uiColor: course.color).opacity(0.3), radius: 20, x: 0, y: 20)
             
             .onTapGesture {
                 if !show{
