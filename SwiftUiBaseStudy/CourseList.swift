@@ -10,8 +10,8 @@ import SwiftUI
 struct CourseList: View {
     
     @State var active = false
-//    @State var show2 = false
     @State var courses = courseData
+    @State var activeIndex =  -1
     
     var body: some View {
         ZStack {
@@ -29,8 +29,11 @@ struct CourseList: View {
                     ForEach(courses.indices, id:\.self) { index in
                         let show = courses[index].show
                         GeometryReader { geometry in
-                            CourseView(show:$courses[index].show, course: courseData[index], active:$active)
+                            CourseView(show:$courses[index].show, course: courses[index], active:$active, index:index, activeIndex:$activeIndex)
                                 .offset(y:show ? -geometry.frame(in: .global).minY:0)
+                                .opacity(active && activeIndex != index ? 0 : 1)
+                                .scaleEffect(active && activeIndex != index ? 0.5 : 1)
+                                .offset(x:active && activeIndex != index ? screen.width : 0)
                         }
                         .frame(height: show ? screen.height:280)
                         .frame(maxWidth: show ? .infinity : screen.width - 60)
@@ -54,8 +57,10 @@ struct CourseView: View {
     
     @Binding var show : Bool
     var course:Course
-    
     @Binding var active:Bool
+    
+    var index: Int
+    @Binding var activeIndex:Int
     
     var body: some View {
         ZStack(alignment: .top) {
@@ -102,6 +107,7 @@ struct CourseView: View {
                             .onTapGesture {
                                 show = false
                                 active = false
+                                activeIndex = -1
                             }
                     }
                 }
@@ -124,6 +130,7 @@ struct CourseView: View {
                 if !show{
                     show = true
                     active = true
+                    activeIndex = index
                 }
             }
         }
